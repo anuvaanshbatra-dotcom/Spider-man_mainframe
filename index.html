@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E.V. CORE // MASTER TERMINAL</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #02060b;
+            --surface: #07101e;
+            --surface-glass: rgba(7, 16, 30, 0.85);
+            --border: #132744;
+            --blue: #00e5ff;
+            --green: #00ff88;
+            --magenta: #ff007f;
+            --warning: #ffb700;
+            --turquoise: #00f0ff;
+            --cyan-glow: rgba(0, 229, 255, 0.2);
+            --text-dim: #7a92b2;
+            --text-bright: #e2f1ff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Scanline Overlay */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(0, 229, 255, 0.01), rgba(0, 255, 136, 0.005), rgba(0, 0, 0, 0.01));
+            z-index: 9999;
+            background-size: 100% 3px, 4px 100%;
+            pointer-events: none;
+        }
+
+        /* --- LANDING PAGE (STEP 1) --- */
+        #landingPage {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, #07162c 0%, var(--bg) 100%);
+            z-index: 10002;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        #landingPage.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .landing-hero-screen {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4%;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .landing-hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            max-width: 800px;
+        }
+
+        .landing-hero h1 {
+            font-size: 2rem;
+            color: var(--text-bright);
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px var(--cyan-glow);
+        }
+
+        .landing-hero p {
+            font-size: 0.9rem;
+            color: var(--blue);
+            line-height: 1.5;
+            max-width: 650px;
+        }
+
+        /* Disclaimer Box */
+        .disclaimer-box {
+            background: rgba(255, 183, 0, 0.08);
+            border: 1px solid var(--warning);
+            border-radius: 6px;
+            padding: 14px 20px;
+            max-width: 650px;
+            width: 100%;
+            font-size: 0.78rem;
+            color: var(--warning);
+            text-align: left;
+            box-shadow: 0 0 15px rgba(255, 183, 0, 0.1);
+        }
+
+        .disclaimer-box strong {
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .enter-btn {
+            background: transparent;
+            border: 2px solid var(--blue);
+            color: var(--blue);
+            padding: 12px 30px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            box-shadow: 0 0 15px var(--cyan-glow);
+            transition: all 0.3s ease;
+        }
+
+        .enter-btn:hover {
+            background: var(--blue);
+            color: var(--bg);
+            box-shadow: 0 0 25px var(--blue);
+        }
+
+        .bounce-link {
+            color: var(--turquoise);
+            text-decoration: none;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: bounce 1.5s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-5px);}
+            60% {transform: translateY(-2px);}
+        }
+
+        .recap-section {
+            width: 100vw;
+            min-height: 100vh;
+            background: rgba(2, 6, 11, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 5%;
+        }
+
+        .recap-card {
+            max-width: 750px;
+            width: 100%;
+            background: var(--surface-glass);
+            border: 1px solid var(--border);
+            padding: 40px;
+            border-radius: 6px;
+            text-align: left;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-dim);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .recap-card h3 {
+            color: var(--text-bright);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            border-bottom: 1px dashed var(--border);
+            padding-bottom: 10px;
+        }
+
+        .recap-card ul {
+            list-style-type: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .recap-card li {
+            position: relative;
+            padding-left: 22px;
+        }
+
+        .recap-card li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: var(--blue);
+        }
+
+        .recap-card strong {
+            color: var(--text-bright);
+        }
+
+        /* --- BOOT OVERLAY (STEP 2) --- */
+        #bootOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, #07162c 0%, var(--bg) 100%);
+            z-index: 10001;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 5%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        #bootOverlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #bootOverlay.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .boot-terminal-window {
+            width: 100%;
+            max-width: 900px;
+            height: 55vh;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 25px var(--cyan-glow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .boot-header {
+            background: #040c18;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+
+        .boot-dots { display: flex; gap: 6px; }
+        .boot-dots span { width: 10px; height: 10px; border-radius: 50%; }
+        .boot-dots span:nth-child(1) { background: #ff5f56; }
+        .boot-dots span:nth-child(2) { background: #ffbd2e; }
+        .boot-dots span:nth-child(3) { background: #27c93f; }
+
+        .boot-body {
+            padding: 25px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--green);
+            flex: 1;
+            overflow-y: auto;
+            background: rgba(2, 6, 11, 0.95);
+        }
+
+        .boot-line { margin-bottom: 8px; }
+        .boot-line.command { color: var(--blue); }
+        .boot-line.warning { color: var(--warning); }
+        .boot-line.highlight { color: var(--magenta); }
+
+        .buffer-progress-container {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .buffer-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .buffer-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .buffer-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--turquoise);
+            box-shadow: 0 0 12px var(--turquoise);
+            transition: width 0.1s linear;
+        }
+
+        /* --- WELCOME BACK PETER SCREEN --- */
+        #welcomeScreen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, #07162c 0%, var(--bg) 100%);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease;
+        }
+
+        #welcomeScreen.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .welcome-text {
+            font-size: 3rem;
+            color: var(--text-bright);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 30px var(--blue);
+            animation: pulseText 1.5s infinite alternate;
+        }
+
+        @keyframes pulseText {
+            0% { text-shadow: 0 0 15px var(--blue); }
+            100% { text-shadow: 0 0 35px var(--turquoise), 0 0 10px var(--green); }
+        }
+
+        /* Navbar */
+        navbar {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            height: 70px;
+            background: rgba(2, 6, 11, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+            z-index: 1000;
+        }
+
+        .nav-logo {
+            color: var(--blue);
+            font-size: 0.9rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+
+        .nav-logo span {
+            width: 8px; height: 8px;
+            background: var(--magenta);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--magenta);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--blue);
+            text-shadow: 0 0 8px var(--cyan-glow);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 5% 60px 5%;
+            display: flex;
+            flex-direction: column;
+            gap: 45px;
+        }
+
+        section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-bright);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .panel-card {
+            background: var(--surface-glass);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .mutator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .mutator-grid { grid-template-columns: 1fr; }
+        }
+
+        .metrics-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .metric-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.76rem;
+        }
+
+        .metric-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: #02060b;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .metric-bar-fill {
+            height: 100%;
+            background: var(--turquoise);
+            box-shadow: 0 0 10px var(--cyan-glow);
+            transition: width 0.4s ease;
+        }
+
+        .dna-viewport {
+            width: 100%;
+            height: 220px;
+            background: #02060b;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        .dna-viewport:active {
+            cursor: grabbing;
+        }
+
+        .dna-viewport canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .schematic-box {
+            width: 100%;
+            height: 220px;
+            background: #02060b;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .schematic-box img {
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.3));
+        }
+
+        .map-logs-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .map-logs-grid { grid-template-columns: 1fr; }
+        }
+
+        #nycMapCanvas {
+            width: 100%;
+            height: 440px;
+            background: #02060b;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            display: block;
+            cursor: pointer;
+        }
+
+        .logs-viewport {
+            background: rgba(2, 6, 11, 0.75);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 15px;
+            height: 440px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .log-entry {
+            background: rgba(7, 16, 30, 0.8);
+            border-left: 3px solid var(--blue);
+            padding: 12px;
+            font-size: 0.78rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .log-entry.warn { border-left-color: var(--warning); }
+        .log-entry.magenta { border-left-color: var(--magenta); }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            color: var(--green);
+            font-size: 0.68rem;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            background: var(--surface-glass);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.76rem;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--text-bright);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(4, 12, 24, 0.8);
+        }
+
+        td { color: var(--text-dim); }
+    </style>
+</head>
+<body>
+
+    <!-- LANDING PAGE  -->
+    <div id="landingPage">
+        <div class="landing-hero-screen">
+            <div class="landing-hero">
+                <h1>ENTER PETER PARKER'S MAINFRAME</h1>
+                <p>Access the E.V. computer terminal running Peter Parker's localized surveillance and biometric stabilization grid.</p>
+                
+                <div class="disclaimer-box">
+                    <strong>⚠️ Spoiler Warning</strong>
+                    This website contains major spoilers regarding <em>Spider-Man: Brand New Day</em>. It is intended to be viewed only after watching the movie.
+                </div>
+
+                <button class="enter-btn" id="enterMainframeBtn">Initialize Terminal</button>
+            </div>
+            <a href="#recapSection" class="bounce-link">↓ Need context? Read the recap below ↓</a>
+        </div>
+        
+        <div class="recap-section" id="recapSection">
+            <div class="recap-card">
+                <h3>// Quick Context for Brand New Day</h3>
+                <ul>
+                    <li>Spider man has gained new natural arachnidpowers and is dealing with the consequences. To prevent this, he uses a modified version of Dr. Bruce Banner's technology.</li>
+                    <li>Peter's secret underground computer terminal that tracks police radios and city threats.</li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOOT & BUFFERING OVERLAY -->
+    <div id="bootOverlay">
+        <div class="boot-terminal-window">
+            <div class="boot-header">
+                <span>bash - master_terminal_init.sh // PARKER_SECURE_SRV</span>
+                <div class="boot-dots"><span></span><span></span><span></span></div>
+            </div>
+            <div class="boot-body" id="bootTerminalBody">
+                <div class="boot-line">[ 0.000000 ] Initializing Parker-Custom Master Kernel Subsystems...</div>
+                <div class="boot-line">[ 0.124019 ] Mounting encrypted partitions and closed-loop servers... SUCCESS.</div>
+                <div class="boot-line command">[ 0.312004 ] >> ALLOCATING NEUROMORPHIC BUFFER & E.V. CORE MATRIX...</div>
+            </div>
+        </div>
+        <div class="buffer-progress-container">
+            <div class="buffer-meta">
+                <span id="bufferStatusText">SYSTEM BUFFERING & INITIALIZING...</span>
+                <span id="bufferPercentText">0%</span>
+            </div>
+            <div class="buffer-bar-bg">
+                <div class="buffer-bar-fill" id="bufferBarFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WELCOME BACK PETER SCREEN -->
+    <div id="welcomeScreen">
+        <div class="welcome-text">Welcome back Peter</div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <navbar>
+        <div class="nav-logo">
+            <span></span> E.V. CORE // MASTER TERMINAL
+        </div>
+        <ul class="nav-links">
+            <li><a href="#mutator">01. Mutator & Schematics</a></li>
+            <li><a href="#mapping">02. Threat Grid</a></li>
+            <li><a href="#telemetry">03. Incident Log</a></li>
+        </ul>
+    </navbar>
+
+
+    <div class="main-container">
+
+        <!-- SECTION 01: DNA MUTATOR & SCHEMATICS -->
+        <section id="mutator">
+            <div class="section-title">01. DNA Inhibitor Mutator & Schematic Diagnostics</div>
+            <div class="mutator-grid">
+                
+                <!-- Left Panel: Volatility Metrics & Interactive Native 3D WebGL Canvas -->
+                <div class="panel-card">
+                    <div style="font-size: 0.82rem; color: var(--text-bright); text-transform: uppercase;">Cellular Volatility & Metrics</div>
+                    <div class="metrics-stack">
+                        <div class="metric-item">
+                            <div class="metric-info">
+                                <span>Arachnid Hormone Levels</span>
+                                <span id="valHormone" style="color: var(--blue);">78.4%</span>
+                            </div>
+                            <div class="metric-bar-bg"><div class="metric-bar-fill" id="barHormone" style="width: 78%;"></div></div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-info">
+                                <span>Physical Stress Index</span>
+                                <span id="valStress" style="color: var(--green);">62.1%</span>
+                            </div>
+                            <div class="metric-bar-bg"><div class="metric-bar-fill" id="barStress" style="width: 62%; background: var(--green);"></div></div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-info">
+                                <span>Neurological Sensitivity</span>
+                                <span id="valNeuro" style="color: var(--turquoise);">84.9%</span>
+                            </div>
+                            <div class="metric-bar-bg"><div class="metric-bar-fill" id="barNeuro" style="width: 85%; background: var(--turquoise);"></div></div>
+                        </div>
+                    </div>
+
+                    <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 5px;">INTERACTIVE 3D SCENE.GLTF VIEWER (DRAG TO ROTATE):</div>
+                    <div class="dna-viewport" id="dnaViewport"></div>
+                </div>
+
+                <!-- Right Panel: Inhibitor Chip Schematic -->
+                <div class="panel-card">
+                    <div style="font-size: 0.82rem; color: var(--text-bright); text-transform: uppercase;">Inhibitor Microchip Schematic v2</div>
+                    <div style="font-size: 0.74rem; color: var(--text-dim);">High-frequency stabilizing oscillator layout mapped directly from field telemetry.</div>
+                    
+                    <div class="schematic-box">
+                        <img src="schematics.png" alt="Inhibitor Chip Blueprint Schematic">
+                    </div>
+                    <div style="font-size: 0.7rem; color: var(--text-dim); text-align: center;">INHIBITOR MODULATION CHIP</div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 02: TACTICAL MAP & SURVEILLANCE FEED -->
+        <section id="mapping">
+            <div class="section-title">02. Active Threat-Grid Assembly</div>
+            <div class="map-logs-grid">
+                
+                <!--  Interactive Map Card -->
+                <div class="panel-card">
+                    <canvas id="nycMapCanvas"></canvas>
+                </div>
+
+                <!-- Intercept Logs -->
+                <div class="panel-card">
+                    
+                    <div class="logs-viewport">
+                        <div class="log-entry magenta">
+                            <div class="log-header"><span>[ 02:14:02 AM ] SECTOR: MIDTOWN CORE</span><span>HEATMAP: TELEPATHIC PULSE</span></div>
+                            <div>Civilian amnesia spikes detected. Telepathic resonance indicators flashing near Jean Grey proximity radius.</div>
+                        </div>
+                        <div class="log-entry">
+                            <div class="log-header"><span>[ 02:42:11 AM ] SECTOR: 42ND STREET</span><span>VECTOR: HEAVY ARMOR</span></div>
+                            <div>Stolen tank tracking active along the urban corridor. The Punisher ambush trajectory crossing 8 blocks of structural damage.</div>
+                        </div>
+                        <div class="log-entry warn">
+                            <div class="log-header"><span>[ 03:15:50 AM ] SECTOR: QUEENSBORO BRIDGE</span><span>STATUS: BLIND SPOT</span></div>
+                            <div>Scorpion (Mac Gargan) transit hijack. Restricted vertical clearance limiting high-altitude swinging maneuvers.</div>
+                        </div>
+                        <div class="log-entry">
+                            <div class="log-header"><span>[ 03:45:00 AM ] SECTOR: ASTORIA WATERFRONT</span><span>STATUS: RECON</span></div>
+                            <div>Hunters Point visual reconnaissance active. Open airspace clear of immediate airborne disturbances.</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 03: CHRONOLOGICAL MONITORING DATA TABLE -->
+        <section id="telemetry">
+            <div class="section-title">03. Chronological Monitoring Data Table</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Index</th>
+                            <th>Location</th>
+                            <th>Primary Threat Vector</th>
+                            <th>Plot Correlation / Outcome</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#001</td>
+                            <td>Midtown Manhattan Streets</td>
+                            <td>Heavy Stolen Armor (Tank)</td>
+                            <td>The Punisher crossfire; severe street devastation</td>
+                            <td><span style="color: var(--green);">Concluded</span></td>
+                        </tr>
+                        <tr>
+                            <td>#002</td>
+                            <td>DODC Headquarters</td>
+                            <td>Structural Breach / Telepathy</td>
+                            <td>Discovered amnesiac hostage; Jean Grey entity manifests</td>
+                            <td><span style="color: var(--blue);">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>#003</td>
+                            <td>Manhattan Transit Grid</td>
+                            <td>Police Transport Intercept</td>
+                            <td>Scorpion breakout; Peter's mutation goes volatile</td>
+                            <td><span style="color: var(--warning);">Escalated</span></td>
+                        </tr>
+                        <tr>
+                            <td>#004</td>
+                            <td>Waterfront / Queens Border</td>
+                            <td>Visual Reconnaissance</td>
+                            <td>Continuous social media screening of Ned & MJ</td>
+                            <td><span style="color: var(--turquoise);">Passive</span></td>
+                        </tr>
+                        <tr>
+                            <td>#005</td>
+                            <td>Total NYC Metro Grid</td>
+                            <td>Telepathic Civilian Leaps</td>
+                            <td>Public panic; Peter forced into continuous mobile state</td>
+                            <td><span style="color: var(--magenta);">Critical Threat</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+
+    <script type="module">
+        import * as THREE from 'https://esm.sh/three@0.160.0';
+        import { GLTFLoader } from 'https://esm.sh/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+
+       
+        const landingPage = document.getElementById('landingPage');
+        const enterMainframeBtn = document.getElementById('enterMainframeBtn');
+        const bootOverlay = document.getElementById('bootOverlay');
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const bootTerminalBody = document.getElementById('bootTerminalBody');
+        const bufferBarFill = document.getElementById('bufferBarFill');
+        const bufferPercentText = document.getElementById('bufferPercentText');
+        const bufferStatusText = document.getElementById('bufferStatusText');
+
+        enterMainframeBtn.addEventListener('click', () => {
+            landingPage.classList.add('hidden');
+            bootOverlay.classList.add('active');
+            startBootSequence();
+        });
+
+        function startBootSequence() {
+            const bootSequenceCommands = [
+                { text: "[ 0.890112 ] ESTABLISHING SECURE HANDSHAKE WITH CLOSED-LOOP REPOSITORY...", class: "command" },
+                { text: "[ 1.404290 ] NEUROMORPHIC CHIP ARRAY WARMING UP... 512MB CACHE ALLOCATED.", class: "" },
+                { text: "[ 2.150123 ] MONITORING BIOMETRICS & CHROMOSOME VOLATILITY...", class: "" },
+                { text: "[ 3.012490 ] INHIBITOR OSCILLATOR SYNC: FREQUENCY LOCKED AT 4.2GHz.", class: "highlight" },
+                { text: "[ 4.560119 ] SCANNING STRUCTURAL VECTOR MESH & TELEPATHIC HEATMAP...", class: "command" },
+                { text: "[ 6.120550 ] WARNING: ELEVATED CELLULAR VOLATILITY DETECTED IN QUADRANT 2.", class: "warning" },
+                { text: "[ 7.890102 ] RE-CALIBRATING MAPPING KEYS... AUTH SUCCESSFUL.", class: "" },
+                { text: "[ 9.450000 ] FINALIZING SYSTEM BOOT... READY.", class: "highlight" }
+            ];
+
+            let startTime = Date.now();
+            let totalDuration = 8000;
+            let cmdIndex = 0;
+
+            let bootInterval = setInterval(() => {
+                let elapsed = Date.now() - startTime;
+                let percent = Math.min(Math.floor((elapsed / totalDuration) * 100), 100);
+
+                bufferBarFill.style.width = percent + '%';
+                bufferPercentText.textContent = percent + '%';
+
+                if (cmdIndex < bootSequenceCommands.length && elapsed > (cmdIndex + 1) * 900) {
+                    const cmd = bootSequenceCommands[cmdIndex];
+                    const div = document.createElement('div');
+                    div.className = `boot-line ${cmd.class}`;
+                    div.textContent = cmd.text;
+                    bootTerminalBody.appendChild(div);
+                    bootTerminalBody.scrollTop = bootTerminalBody.scrollHeight;
+                    cmdIndex++;
+                }
+
+                if (elapsed >= totalDuration) {
+                    clearInterval(bootInterval);
+                    bufferStatusText.textContent = "SYSTEM INITIALIZATION COMPLETE";
+                    
+                    setTimeout(() => {
+                        bootOverlay.classList.remove('active');
+                        bootOverlay.classList.add('fade-out');
+                        welcomeScreen.classList.add('active');
+
+                        setTimeout(() => {
+                            welcomeScreen.classList.remove('active');
+                        }, 2200);
+                    }, 400);
+                }
+            }, 50);
+        }
+
+        // Fluctuating Metrics Simulation
+        setInterval(() => {
+            const h = (75 + Math.random() * 6).toFixed(1);
+            const s = (58 + Math.random() * 8).toFixed(1);
+            const n = (80 + Math.random() * 7).toFixed(1);
+
+            document.getElementById('valHormone').textContent = h + '%';
+            document.getElementById('barHormone').style.width = h + '%';
+
+            document.getElementById('valStress').textContent = s + '%';
+            document.getElementById('barStress').style.width = s + '%';
+
+            document.getElementById('valNeuro').textContent = n + '%';
+            document.getElementById('barNeuro').style.width = n + '%';
+        }, 2000);
+
+        // --- INTERACTIVE NATIVE 3D THREE.JS (SCENE.GLTF) VIEWER ---
+        const viewport = document.getElementById('dnaViewport');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(40, viewport.clientWidth / viewport.clientHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        viewport.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.8);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0x00e5ff, 3.0);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
+
+        let dnaModel = null;
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let autoRotate = true;
+
+        const loader = new GLTFLoader();
+        loader.load('scene.gltf', (gltf) => {
+            dnaModel = gltf.scene;
+            
+           
+            const box = new THREE.Box3().setFromObject(dnaModel);
+            const center = box.getCenter(new THREE.Vector3());
+            dnaModel.position.sub(center); 
+
+            
+            const pivotGroup = new THREE.Group();
+            pivotGroup.add(dnaModel);
+            scene.add(pivotGroup);
+            dnaModel = pivotGroup; k
+            dnaModel.scale.set(2.2, 2.2, 2.2);
+
+        }, undefined, (error) => {
+            console.warn('Could not load scene.gltf. Ensure file is in the root directory.', error);
+        });
+
+        camera.position.z = 3.2;
+
+       
+        viewport.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            autoRotate = false;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging || !dnaModel) return;
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
+
+            dnaModel.rotation.y += deltaX * 0.008;
+            dnaModel.rotation.x += deltaY * 0.008;
+
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            setTimeout(() => { autoRotate = true; }, 3000); // Resume smooth rotation after 3 seconds of inactivity
+        });
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            if (dnaModel && autoRotate) {
+                dnaModel.rotation.y += 0.008;
+            }
+            renderer.render(scene, camera);
+        }
+        animate3D();
+
+        window.addEventListener('resize', () => {
+            if (viewport) {
+                camera.aspect = viewport.clientWidth / viewport.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+            }
+        });
+
+        // --- INTERACTIVE 2D NYC GRID MAP CANVAS ---
+        const mapCanvas = document.getElementById('nycMapCanvas');
+        const mapCtx = mapCanvas.getContext('2d');
+        let activePopup = null;
+
+        function resizeMapCanvas() {
+            mapCanvas.width = mapCanvas.parentElement.clientWidth;
+            mapCanvas.height = mapCanvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeMapCanvas);
+        resizeMapCanvas();
+
+        const markers = [
+            { xRatio: 0.45, yRatio: 0.30, color: '#ff007f', title: 'DODC HEADQUARTERS', desc: 'Epicenter of crisis & amnesiac hostage recovery.' },
+            { xRatio: 0.58, yRatio: 0.45, color: '#ffb700', title: '42ND STREET CORRIDOR', desc: 'Punisher ambush & heavy armor intercept zone.' },
+            { xRatio: 0.32, yRatio: 0.55, color: '#00e5ff', title: 'MJ\'S CAFE (GREENWICH)', desc: 'Surveillance ping on civilian life check and safe haven.' },
+            { xRatio: 0.72, yRatio: 0.38, color: '#00ff88', title: 'NED\'S PLACE (QUEENS)', desc: 'Encrypted relay node & old hardware blueprint cache.' },
+            { xRatio: 0.22, yRatio: 0.75, color: '#ff007f', title: 'MAY\'S GRAVE (FLUSHING)', desc: 'Quiet perimeter check point. Low threat telemetry.' },
+            { xRatio: 0.75, yRatio: 0.70, color: '#ffb700', title: 'QUEENSBORO UNDERPASS', desc: 'Scorpion transit hijack site.' },
+            { xRatio: 0.52, yRatio: 0.85, color: '#00f0ff', title: 'HUNTERS POINT OVERLOOK', desc: 'Visual reconnaissance & Midtown line-of-sight.' }
+        ];
+
+        function drawMap() {
+            mapCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
+            let w = mapCanvas.width;
+            let h = mapCanvas.height;
+
+            // Draw Cyber Grid Lines
+            mapCtx.strokeStyle = '#132744';
+            mapCtx.lineWidth = 1;
+            let gridSize = 40;
+            for (let x = 0; x < w; x += gridSize) {
+                mapCtx.beginPath(); mapCtx.moveTo(x, 0); mapCtx.lineTo(x, h); mapCtx.stroke();
+            }
+            for (let y = 0; y < h; y += gridSize) {
+                mapCtx.beginPath(); mapCtx.moveTo(0, y); mapCtx.lineTo(w, y); mapCtx.stroke();
+            }
+
+          
+            mapCtx.beginPath();
+            mapCtx.moveTo(w * 0.28, 0);
+            mapCtx.bezierCurveTo(w * 0.45, h * 0.4, w * 0.25, h * 0.7, w * 0.55, h);
+            mapCtx.strokeStyle = '#051b30';
+            mapCtx.lineWidth = 25;
+            mapCtx.stroke();
+
+       
+            markers.forEach((m, idx) => {
+                let mx = w * m.xRatio;
+                let my = h * m.yRatio;
+
+       
+                mapCtx.beginPath();
+                mapCtx.arc(mx, my, 10 + Math.sin(Date.now() * 0.005 + idx) * 4, 0, Math.PI * 2);
+                mapCtx.strokeStyle = m.color;
+                mapCtx.lineWidth = 1.5;
+                mapCtx.stroke();
+
+       
+                mapCtx.beginPath();
+                mapCtx.arc(mx, my, 5, 0, Math.PI * 2);
+                mapCtx.fillStyle = m.color;
+                mapCtx.shadowColor = m.color;
+                mapCtx.shadowBlur = 10;
+                mapCtx.fill();
+                mapCtx.shadowBlur = 0;
+
+                mapCtx.fillStyle = '#e2f1ff';
+                mapCtx.font = '10px "JetBrains Mono", monospace';
+                mapCtx.fillText(m.title, mx + 12, my + 4);
+
+           
+                if (activePopup === m) {
+                    mapCtx.fillStyle = 'rgba(7, 16, 30, 0.95)';
+                    mapCtx.strokeStyle = m.color;
+                    mapCtx.lineWidth = 1;
+                    mapCtx.fillRect(mx + 12, my + 15, 210, 52);
+                    mapCtx.strokeRect(mx + 12, my + 15, 210, 52);
+
+                    mapCtx.fillStyle = '#fff';
+                    mapCtx.font = 'bold 10px "JetBrains Mono", monospace';
+                    mapCtx.fillText(m.title, mx + 18, my + 32);
+                    mapCtx.fillStyle = '#7a92b2';
+                    mapCtx.font = '9px "JetBrains Mono", monospace';
+                    mapCtx.fillText(m.desc, mx + 18, my + 50);
+                }
+            });
+
+            requestAnimationFrame(drawMap);
+        }
+        drawMap();
+
+  
+        mapCanvas.addEventListener('click', (e) => {
+            let rect = mapCanvas.getBoundingClientRect();
+            let clickX = e.clientX - rect.left;
+            let clickY = e.clientY - rect.top;
+            let w = mapCanvas.width;
+            let h = mapCanvas.height;
+
+            let clickedMarker = null;
+            markers.forEach(m => {
+                let mx = w * m.xRatio;
+                let my = h * m.yRatio;
+                let dist = Math.hypot(clickX - mx, clickY - my);
+                if (dist < 18) {
+                    clickedMarker = m;
+                }
+            });
+
+            activePopup = (activePopup === clickedMarker) ? null : clickedMarker;
+        });
+    </script>
+</body>
+</html>
